@@ -9,7 +9,7 @@ type Language = 'ru' | 'en';
 
 const translations = {
   en: {
-    heroTitle: "ALBERT AZIZOV",
+    heroTitle: "ALBERT",
     heroSubtitle: "web & mobile engineer",
     heroDesc: "Hey! Here is some quick info about me. Basically, I am 18 years old, living in Central Asia, and developing web and mobile apps. I love writing clean code and building interfaces that look great and feel intuitive to use.",
     heroDescExtra: " In parallel, I am studying AI development to make sure that the AI itself doesn't replace me in the future 😁 On a more serious note, my dream is to grow as an engineer and eventually work at tech giants like Google or Amazon. I want to keep it real: the market is changing fast, so I focus on learning every day and building things that are genuinely useful.",
@@ -108,7 +108,7 @@ const translations = {
     footerCopyright: "© 2026 ALBERT A."
   },
   ru: {
-    heroTitle: "ALBERT AZIZOV",
+    heroTitle: "ALBERT",
     heroSubtitle: "web & mobile engineer",
     heroDesc: "Привет! Это краткая информация обо мне. Вкратце: мне 18 лет, живу в Центральной Азии и создаю веб- и мобильные приложения. Мне очень нравится писать аккуратный код и делать интерфейсы, которые выглядят приятно и которыми удобно пользоваться.",
     heroDescExtra: " Параллельно я изучаю разработку искусственного интеллекта и нейросетей, чтобы в будущем этот самый ИИ меня не заменил 😁 Ну а если серьезно, моя мечта вырасти как специалист и работать в крупных технологических компаниях вроде Google или Amazon. Я реально смотрю на вещи и понимаю, что рынок меняется, поэтому стараюсь развиваться каждый день, чтобы создавать по-настоящему полезные штуки.",

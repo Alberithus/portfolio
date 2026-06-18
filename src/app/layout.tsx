@@ -20,9 +20,9 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "ALBERT AZIZOV // PORTFOLIO",
-  description: "Personal portfolio of Albert Azizov - web & mobile engineer. Minimalist, premium brutalist monochrome interface showcasing technologies and selected works.",
-  keywords: ["Albert Azizov", "Web Engineer", "React Developer", "React Native", "MySQL", "Portfolio", "Brutalist Design"],
+  title: "ALBERT // PORTFOLIO",
+  description: "Personal portfolio of Albert - web & mobile engineer. Minimalist, premium brutalist monochrome interface showcasing technologies and selected works.",
+  keywords: ["Albert", "Web Engineer", "React Developer", "React Native", "MySQL", "Portfolio", "Brutalist Design"],
 };
 
 export default function RootLayout({
@@ -41,4 +41,3 @@ export default function RootLayout({
     </html>
   );
 }
-
