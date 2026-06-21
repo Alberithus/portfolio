@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import { Geist, Geist_Mono, Cormorant_Garamond, Rye, Special_Elite } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./components/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,10 +20,22 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const rye = Rye({
+  variable: "--font-rye",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const specialElite = Special_Elite({
+  variable: "--font-special-elite",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 export const metadata: Metadata = {
   title: "ALBERT // PORTFOLIO",
-  description: "Personal portfolio of Albert - web & mobile engineer. Minimalist, premium brutalist monochrome interface showcasing technologies and selected works.",
-  keywords: ["Albert", "Web Engineer", "React Developer", "React Native", "MySQL", "Portfolio", "Brutalist Design"],
+  description: "Personal portfolio of Albert Azizov — web & mobile engineer.",
+  keywords: ["Albert Azizov", "Web Engineer", "React Developer", "React Native", "MySQL", "Portfolio"],
 };
 
 export default function RootLayout({
@@ -33,10 +46,13 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
+      data-theme="rdr2"
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${rye.variable} ${specialElite.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-black text-white flex flex-col font-sans">
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
