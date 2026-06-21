@@ -843,8 +843,17 @@ export default function Home() {
           style={{ background: bgColor }}
         >
           <div className="text-center select-none">
-            <h1
-              className="animate-intro-text"
+            <motion.h1
+              initial={{ opacity: 0, y: 12 }}
+              animate={{
+                opacity: [0, 1, 1, 0],
+                y: [12, 0, 0, -12]
+              }}
+              transition={{
+                duration: 1.6,
+                times: [0, 0.25, 0.75, 1],
+                ease: [0.25, 1, 0.5, 1]
+              }}
               style={{
                 fontFamily: isRdr2 ? rdr2Font : 'var(--font-serif), Georgia, serif',
                 fontSize: 'clamp(3.5rem, 8vw, 6rem)',
@@ -857,7 +866,7 @@ export default function Home() {
               }}
             >
               hi!
-            </h1>
+            </motion.h1>
           </div>
         </div>
       )}
