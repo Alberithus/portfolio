@@ -10,6 +10,7 @@
 
 :root,
 [data-theme="modern"] {
+  color-scheme: dark;
   --bg: #000000;
   --fg: #ffffff;
   --accent: #ffffff;
@@ -26,6 +27,7 @@
 }
 
 [data-theme="rdr2"] {
+  color-scheme: dark;
   --bg: #080604;
   --fg: #d6c9a8;
   --accent: #b01c1c;
