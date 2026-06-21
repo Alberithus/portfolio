@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond, Rye, Special_Elite } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeContext";
 
@@ -32,6 +33,12 @@ const specialElite = Special_Elite({
   weight: ["400"],
 });
 
+const rdr2Font = localFont({
+  src: "../../public/fonts/rdr2.ttf",
+  variable: "--font-rdr2",
+  display: "block",
+});
+
 export const metadata: Metadata = {
   title: "ALBERT // PORTFOLIO",
   description: "Albert — web & mobile engineer.",
@@ -47,7 +54,7 @@ export default function RootLayout({
     <html
       lang="ru"
       data-theme="rdr2"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${rye.variable} ${specialElite.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${rye.variable} ${specialElite.variable} ${rdr2Font.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-black text-white flex flex-col font-sans">
         <ThemeProvider>

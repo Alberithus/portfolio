@@ -1,12 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'RDR2';
-  src: url('/fonts/rdr2.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 :root,
 [data-theme="modern"] {
@@ -66,8 +59,8 @@ body {
 }
 
 * {
-  transition-property: color, background-color, border-color, opacity, box-shadow;
-  transition-duration: 0.6s;
+  transition-property: color, background-color, border-color, text-shadow, box-shadow;
+  transition-duration: 0.5s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -352,7 +345,7 @@ button, a, input, svg {
 [data-theme="rdr2"] h2,
 [data-theme="rdr2"] h3,
 [data-theme="rdr2"] .rdr2-font {
-  font-family: 'RDR2', var(--font-rye), serif;
+  font-family: var(--font-rdr2), var(--font-rye), serif;
 }
 
 @keyframes stamp-slam {
@@ -386,7 +379,7 @@ button, a, input, svg {
   position: relative;
   user-select: none;
   transform: rotate(1.5deg);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .rdr2-wanted-poster::before {
@@ -442,5 +435,14 @@ button, a, input, svg {
     0 4px 12px rgba(0, 0, 0, 0.5),
     inset 0 0 15px rgba(176, 28, 28, 0.08);
 }
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
 
 

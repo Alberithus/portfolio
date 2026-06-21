@@ -348,17 +348,55 @@ function WantedPoster({ isHovered, isStamped, stampText, onStamp, isShaking }: {
   );
 }
 
-interface MusicControlsProps {
+function RevolverCylinder({ isPlaying, accentColor, bgColor }: { isPlaying: boolean; accentColor: string; bgColor: string }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 100 100"
+      style={{
+        transformOrigin: "center",
+        animation: isPlaying ? "spin-slow 4s linear infinite" : "none",
+        display: "block",
+      }}
+    >
+      {/* Outer steel cylinder */}
+      <circle cx="50" cy="50" r="46" fill="none" stroke={accentColor} strokeWidth="5" />
+      <circle cx="50" cy="50" r="42" fill={accentColor} opacity="0.15" />
+      {/* Center pin */}
+      <circle cx="50" cy="50" r="10" fill={accentColor} />
+      {/* 6 Chambers */}
+      <circle cx="50" cy="22" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+      <circle cx="74" cy="36" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+      <circle cx="74" cy="64" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+      <circle cx="50" cy="78" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+      <circle cx="26" cy="64" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+      <circle cx="26" cy="36" r="8" fill={bgColor} stroke={accentColor} strokeWidth="2" />
+    </svg>
+  );
+}
+
+function ModernEqualizer({ isPlaying }: { isPlaying: boolean }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', width: '12px', height: '10px' }}>
+      <div className={isPlaying ? 'animate-eq-1' : ''} style={{ width: '2px', height: '100%', background: '#ffffff', transform: isPlaying ? 'none' : 'scaleY(0.2)', transformOrigin: 'bottom' }} />
+      <div className={isPlaying ? 'animate-eq-2' : ''} style={{ width: '2px', height: '100%', background: '#ffffff', transform: isPlaying ? 'none' : 'scaleY(0.6)', transformOrigin: 'bottom' }} />
+      <div className={isPlaying ? 'animate-eq-3' : ''} style={{ width: '2px', height: '100%', background: '#ffffff', transform: isPlaying ? 'none' : 'scaleY(0.3)', transformOrigin: 'bottom' }} />
+    </div>
+  );
+}
+
+interface FloatingMusicPlayerProps {
   isPlaying: boolean;
   togglePlay: () => void;
   audioRef: React.RefObject<HTMLAudioElement | null>;
   volumeRef: React.MutableRefObject<number>;
   theme: string;
   lang: Language;
-  onClose: () => void;
 }
 
-function MusicControls({ isPlaying, togglePlay, audioRef, volumeRef, theme, lang, onClose }: MusicControlsProps) {
+function FloatingMusicPlayer({ isPlaying, togglePlay, audioRef, volumeRef, theme, lang }: FloatingMusicPlayerProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [vol, setVol] = useState(volumeRef.current);
   const [isMuted, setIsMuted] = useState(false);
   const isRdr2 = theme === 'rdr2';
@@ -399,141 +437,181 @@ function MusicControls({ isPlaying, togglePlay, audioRef, volumeRef, theme, lang
   const mutedColor  = isRdr2 ? 'var(--muted)'  : '#a1a1aa';
   const mutedDark   = isRdr2 ? 'var(--muted-dk)' : '#52525b';
   const border2     = isRdr2 ? 'var(--border-2)' : '#27272a';
-  const cardBg      = isRdr2 ? 'var(--card)'     : '#09090b';
+  const cardBg      = isRdr2 ? 'var(--card)'     : 'rgba(9, 9, 11, 0.75)';
   const monoFont    = isRdr2 ? `var(--font-special-elite), serif` : 'var(--font-geist-mono), monospace';
 
   return (
-    <motion.div
-      key="music-controls"
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ duration: 0.15 }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        background: cardBg,
-        border: `1px solid ${border2}`,
-        padding: '6px 12px',
-        fontFamily: monoFont,
-        color: mutedColor,
-        borderRadius: isRdr2 ? '0px' : '9999px',
-        boxShadow: isRdr2 ? '4px 4px 0px var(--accent)' : '0 4px 12px rgba(0,0,0,0.5)',
-      }}
-    >
-      <button
-        onClick={togglePlay}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: accentColor,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 0,
-        }}
-      >
-        {isPlaying ? (
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="4" y="4" width="6" height="16" />
-            <rect x="14" y="4" width="6" height="16" />
-          </svg>
+    <div className="fixed bottom-6 right-6 z-40">
+      <AnimatePresence initial={false} mode="wait">
+        {!isExpanded ? (
+          <motion.button
+            key="collapsed"
+            layoutId="music-player-container"
+            onClick={() => setIsExpanded(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: isRdr2 ? '0px' : '50%',
+              background: isRdr2 ? '#0c0905' : 'rgba(9, 9, 11, 0.75)',
+              border: `1.5px solid ${accentColor}`,
+              boxShadow: isRdr2
+                ? '3px 3px 0px var(--accent)'
+                : '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              backdropFilter: isRdr2 ? 'none' : 'blur(16px)',
+              padding: 0,
+            }}
+          >
+            {isRdr2 ? (
+              <RevolverCylinder isPlaying={isPlaying} accentColor={accentColor} bgColor="#0c0905" />
+            ) : (
+              <ModernEqualizer isPlaying={isPlaying} />
+            )}
+          </motion.button>
         ) : (
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5,3 19,12 5,21" />
-          </svg>
+          <motion.div
+            key="expanded"
+            layoutId="music-player-container"
+            style={{
+              background: cardBg,
+              border: `1.5px solid ${accentColor}`,
+              padding: '0 10px',
+              fontFamily: monoFont,
+              color: isRdr2 ? '#d6c9a8' : '#ffffff',
+              borderRadius: isRdr2 ? '0px' : '9999px',
+              boxShadow: isRdr2
+                ? '4px 4px 0px var(--accent)'
+                : '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backdropFilter: isRdr2 ? 'none' : 'blur(20px)',
+              height: '38px',
+            }}
+          >
+            <button
+              onClick={togglePlay}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: accentColor,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+              }}
+            >
+              {isPlaying ? (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="4" width="6" height="16" />
+                  <rect x="14" y="4" width="6" height="16" />
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              )}
+            </button>
+
+            <span style={{ color: border2, fontSize: '10px', opacity: 0.35 }}>|</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {isRdr2 ? (
+                <RevolverCylinder isPlaying={isPlaying} accentColor={accentColor} bgColor="#0c0905" />
+              ) : (
+                <ModernEqualizer isPlaying={isPlaying} />
+              )}
+              <span
+                style={{
+                  fontSize: '8px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  maxWidth: '90px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  color: isRdr2 ? '#d6c9a8' : '#ffffff',
+                }}
+                title={getTrackName()}
+              >
+                {getTrackName()}
+              </span>
+            </div>
+
+            <span style={{ color: border2, fontSize: '10px', opacity: 0.35 }}>|</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                onClick={toggleMute}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: mutedColor,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0,
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = accentColor)}
+                onMouseLeave={e => (e.currentTarget.style.color = mutedColor)}
+              >
+                {isMuted ? (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <line x1="23" y1="9" x2="17" y2="15" />
+                    <line x1="17" y1="9" x2="23" y2="15" />
+                  </svg>
+                ) : (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </svg>
+                )}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={isMuted ? 0 : vol}
+                onChange={handleVolChange}
+                className="w-12 h-0.5 cursor-pointer appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:w-1 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:w-1 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-none"
+                style={{
+                  background: `linear-gradient(to right, ${accentColor} ${(isMuted ? 0 : vol) * 100}%, ${border2} ${(isMuted ? 0 : vol) * 100}%)`,
+                }}
+              />
+            </div>
+
+            <span style={{ color: border2, fontSize: '10px', opacity: 0.35 }}>|</span>
+
+            <button
+              onClick={() => setIsExpanded(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: mutedDark,
+                cursor: 'pointer',
+                fontSize: '11px',
+                lineHeight: 1,
+                padding: 0,
+                fontWeight: 700,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = accentColor)}
+              onMouseLeave={e => (e.currentTarget.style.color = mutedDark)}
+            >
+              ×
+            </button>
+          </motion.div>
         )}
-      </button>
-
-      <span style={{ fontSize: '9px', opacity: 0.4 }}>|</span>
-
-      <span
-        style={{
-          fontSize: '9px',
-          letterSpacing: '0.05em',
-          maxWidth: '120px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          textTransform: 'uppercase',
-          fontWeight: 700,
-          color: isRdr2 ? '#1e180e' : '#ffffff',
-          opacity: 0.85,
-        }}
-        title={getTrackName()}
-      >
-        {getTrackName()}
-      </span>
-
-      <span style={{ fontSize: '9px', opacity: 0.4 }}>|</span>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <button
-          onClick={toggleMute}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: mutedColor,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            padding: 0,
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = accentColor)}
-          onMouseLeave={e => (e.currentTarget.style.color = mutedColor)}
-        >
-          {isMuted ? (
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            </svg>
-          )}
-        </button>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={isMuted ? 0 : vol}
-          onChange={handleVolChange}
-          className="w-16 h-1 cursor-pointer appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:w-1 [&::-moz-range-thumb]:h-2.5 [&::-moz-range-thumb]:w-1 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-none"
-          style={{
-            background: `linear-gradient(to right, ${accentColor} ${(isMuted ? 0 : vol) * 100}%, ${border2} ${(isMuted ? 0 : vol) * 100}%)`,
-          }}
-        />
-        <span style={{ fontSize: '8px', width: '22px', textAlign: 'right', opacity: 0.65 }}>
-          {isMuted ? '0%' : `${Math.round(vol * 100)}%`}
-        </span>
-      </div>
-
-      <span style={{ fontSize: '9px', opacity: 0.4 }}>|</span>
-
-      <button
-        onClick={onClose}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: mutedDark,
-          cursor: 'pointer',
-          fontWeight: 700,
-          fontSize: '13px',
-          lineHeight: 1,
-          padding: 0,
-        }}
-        onMouseEnter={e => (e.currentTarget.style.color = accentColor)}
-        onMouseLeave={e => (e.currentTarget.style.color = mutedDark)}
-      >
-        ×
-      </button>
-    </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -554,12 +632,16 @@ export default function Home() {
   const [isPlaying, setIsPlaying]         = useState(false);
   const [isCharHovered, setIsCharHovered] = useState(false);
   const [charBubble, setCharBubble]       = useState('');
+  const [hoveredCard, setHoveredCard]     = useState<string | null>(null);
   const [showIntro, setShowIntro]         = useState(true);
   const [introFade, setIntroFade]         = useState(false);
-  const [hoveredCard, setHoveredCard]     = useState<string | null>(null);
+  const [mounted, setMounted]             = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [hoveredRect, setHoveredRect]     = useState<{ width: number; height: number } | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showMusic, setShowMusic]         = useState(false);
   const [isExpanded, setIsExpanded]       = useState(false);
   const [catFace, setCatFace]             = useState('_x ');
   const [catClicks, setCatClicks]         = useState(0);
@@ -806,7 +888,7 @@ export default function Home() {
     fetchCount();
   }, []);
 
-  const rdr2Font    = `'RDR2', var(--font-rye), serif`;
+  const rdr2Font    = `var(--font-rdr2), var(--font-rye), serif`;
   const seEliteFont = `var(--font-special-elite), serif`;
   const monoFont    = isRdr2 ? seEliteFont : 'var(--font-geist-mono), monospace';
   const bodyFont    = isRdr2 ? seEliteFont : 'var(--font-geist-sans), sans-serif';
@@ -837,7 +919,7 @@ export default function Home() {
         }}
       />
 
-      {showIntro && (
+      {showIntro && mounted && (
         <div
           className={`fixed inset-0 z-[9998] flex items-center justify-center transition-opacity duration-700 ${introFade ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           style={{ background: bgColor }}
@@ -899,37 +981,6 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            <div style={{ fontFamily: monoFont, fontSize: '10px' }}>
-              <AnimatePresence mode="wait">
-                {!showMusic ? (
-                  <motion.button
-                    key="music-btn"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    onClick={() => setShowMusic(true)}
-                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', color: isPlaying ? accentColor : mutedDark, fontFamily: monoFont, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em' }}
-                  >
-                    <Music size={11} className={isPlaying ? 'animate-pulse' : ''} />
-                    <span>{isPlaying ? t.musicOn : t.musicOff}</span>
-                  </motion.button>
-                ) : (
-                  <MusicControls
-                    isPlaying={isPlaying}
-                    togglePlay={togglePlay}
-                    audioRef={audioRef}
-                    volumeRef={volumeRef}
-                    theme={theme}
-                    lang={lang}
-                    onClose={() => setShowMusic(false)}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-
-            <span style={{ color: borderColor }}>/</span>
-
             <button onClick={toggleTheme} className="theme-switcher" style={{ fontFamily: monoFont }}>
               {isRdr2 ? `⚙ ${t.switchLabel.toModern}` : `🤠 ${t.switchLabel.toRdr2}`}
             </button>
@@ -987,13 +1038,7 @@ export default function Home() {
           >
             <div className="space-y-3 w-full">
               <div className="relative w-fit">
-                {isRdr2 && (
-                  <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.45 }}>
-                    <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
-                    <span style={{ fontFamily: seEliteFont, fontSize: '8px', color: 'var(--accent)', letterSpacing: '0.5em', textTransform: 'uppercase' }}>PROFILE</span>
-                    <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
-                  </div>
-                )}
+
 
                 <h2
                   className={`font-medium tracking-wide text-5xl sm:text-6xl md:text-7xl lg:text-4xl xl:text-5xl uppercase leading-tight select-none ${!isRdr2 ? 'font-serif' : ''}`}
@@ -1009,7 +1054,7 @@ export default function Home() {
                 </h2>
 
                 <div
-                  className="absolute left-[calc(100%+16px)] sm:left-[calc(100%+24px)] bottom-1 z-10"
+                  className="relative sm:absolute mt-6 sm:mt-0 sm:left-[calc(100%+16px)] sm:bottom-1 z-10"
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={() => handleCharHover(true)}
                   onMouseLeave={() => handleCharHover(false)}
@@ -1300,6 +1345,14 @@ export default function Home() {
         </footer>
 
       </div>
+      <FloatingMusicPlayer
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        audioRef={audioRef}
+        volumeRef={volumeRef}
+        theme={theme}
+        lang={lang}
+      />
     </main>
   );
 }
