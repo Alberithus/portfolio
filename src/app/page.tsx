@@ -977,7 +977,7 @@ export default function Home() {
             className={`col-span-1 md:col-span-4 flex flex-col items-start text-left space-y-6 lg:sticky lg:top-20 pt-0 pb-6 scroll-mt-24 ${highlightedSection === 'about' ? 'highlight-pulse' : ''}`}
           >
             <div className="space-y-3 w-full">
-              <div className="flex flex-col lg:flex-row lg:items-end gap-6 relative w-full">
+              <div className="flex flex-col lg:flex-row lg:items-end gap-6 relative w-fit">
                 <div className="flex flex-col items-start">
                   {isRdr2 && (
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.45 }}>
