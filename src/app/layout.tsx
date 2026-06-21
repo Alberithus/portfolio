@@ -34,7 +34,7 @@ const specialElite = Special_Elite({
 
 export const metadata: Metadata = {
   title: "ALBERT // PORTFOLIO",
-  description: "Personal portfolio of Albert Azizov — web & mobile engineer.",
+  description: "Albert — web & mobile engineer.",
   keywords: ["Albert Azizov", "Web Engineer", "React Developer", "React Native", "MySQL", "Portfolio"],
 };
 

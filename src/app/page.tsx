@@ -986,32 +986,30 @@ export default function Home() {
             className={`col-span-1 md:col-span-4 flex flex-col items-start text-left space-y-6 lg:sticky lg:top-20 pt-0 pb-6 scroll-mt-24 ${highlightedSection === 'about' ? 'highlight-pulse' : ''}`}
           >
             <div className="space-y-3 w-full">
-              <div className="flex flex-col lg:flex-row lg:items-end gap-6 relative w-fit">
-                <div className="flex flex-col items-start">
-                  {isRdr2 && (
-                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.45 }}>
-                      <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
-                      <span style={{ fontFamily: seEliteFont, fontSize: '8px', color: 'var(--accent)', letterSpacing: '0.5em', textTransform: 'uppercase' }}>PROFILE</span>
-                      <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
-                    </div>
-                  )}
+              <div className="relative w-fit">
+                {isRdr2 && (
+                  <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.45 }}>
+                    <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
+                    <span style={{ fontFamily: seEliteFont, fontSize: '8px', color: 'var(--accent)', letterSpacing: '0.5em', textTransform: 'uppercase' }}>PROFILE</span>
+                    <div style={{ width: '16px', height: '1px', background: 'var(--accent)' }} />
+                  </div>
+                )}
 
-                  <h2
-                    className={`font-medium tracking-wide text-5xl sm:text-6xl md:text-7xl lg:text-4xl xl:text-5xl uppercase leading-tight select-none ${!isRdr2 ? 'font-serif' : ''}`}
-                    style={{
-                      color: fgColor,
-                      fontFamily: isRdr2 ? rdr2Font : undefined,
-                      letterSpacing: isRdr2 ? '0.06em' : undefined,
-                      whiteSpace: 'pre-line',
-                      textShadow: isRdr2 ? '0 0 30px rgba(176,28,28,0.35), 2px 2px 0 rgba(0,0,0,0.8)' : undefined,
-                    }}
-                  >
-                    {t.heroTitle}
-                  </h2>
-                </div>
+                <h2
+                  className={`font-medium tracking-wide text-5xl sm:text-6xl md:text-7xl lg:text-4xl xl:text-5xl uppercase leading-tight select-none ${!isRdr2 ? 'font-serif' : ''}`}
+                  style={{
+                    color: fgColor,
+                    fontFamily: isRdr2 ? rdr2Font : undefined,
+                    letterSpacing: isRdr2 ? '0.06em' : undefined,
+                    whiteSpace: 'pre-line',
+                    textShadow: isRdr2 ? '0 0 30px rgba(176,28,28,0.35), 2px 2px 0 rgba(0,0,0,0.8)' : undefined,
+                  }}
+                >
+                  {t.heroTitle}
+                </h2>
 
                 <div
-                  className="relative lg:absolute lg:left-[calc(100%+24px)] lg:bottom-1.5 z-10 self-start lg:self-auto"
+                  className="absolute left-[calc(100%+16px)] sm:left-[calc(100%+24px)] bottom-1 z-10"
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={() => handleCharHover(true)}
                   onMouseLeave={() => handleCharHover(false)}
