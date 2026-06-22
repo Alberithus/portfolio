@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ArrowUpRight, Database, Layout, Smartphone, Code, Music } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import SkillRadar from "./components/SkillRadar";
 import { useTheme } from "./components/ThemeContext";
 
@@ -28,10 +29,10 @@ const translations = {
     projectsTitle: "02 / SELECTED WORKS",
     projectsSubtitle: "Featured Case Studies",
     projects: [
-      { title: "DEVLINK ANALYTICS", status: "Active",  type: "active",  sub: "click tracking & analytics platform",    desc: "An engineering alternative to Linktree with a built-in admin panel. Tracks link clicks in real-time, executing atomic increments in a MySQL database.", action: "VIEW PROJECT",     isConcept: false, tags: ["REACT", "NEXT.JS", "MYSQL", "TAILWIND"] },
-      { title: "ASCII ART GENERATOR", status: "Planned", type: "planned", sub: "image & video to ascii converter",      desc: "A high-performance system for converting images and video streams into ASCII art in real-time. Designed to run client-side with canvas integration.", action: "UPCOMING PROJECT", isConcept: true,  tags: ["REACT", "CANVAS", "WEB WORKERS", "TAILWIND"] },
-      { title: "SYNTAXVAULT",       status: "Concept", type: "concept", sub: "secure code snippet vault",             desc: "A minimalist service for storing code snippets with syntax highlighting and token-based access protection.", action: "CONCEPT STAGE",  isConcept: true,  tags: ["REACT", "EXPRESS", "POSTGRESQL", "TAILWIND"] },
-      { title: "DEVPULSE KANBAN",   status: "Concept", type: "concept", sub: "high-speed agile board",                desc: "A task management application featuring a super-fast client-side drag-and-drop interface with local caching.", action: "CONCEPT STAGE",  isConcept: true,  tags: ["NEXT.JS", "DND-KIT", "SQLITE", "TAILWIND"] },
+      { title: "ASCII ART GENERATOR", status: "Active", type: "active", sub: "image & video to ascii converter", desc: "A high-performance system for converting images and video streams into ASCII art in real-time. Designed to run client-side with canvas integration.", action: "VIEW PROJECT", isConcept: false, tags: ["REACT", "CANVAS", "WEB WORKERS", "TAILWIND"], url: "/ascii" },
+      { title: "DEVLINK ANALYTICS", status: "Active",  type: "active",  sub: "click tracking & analytics platform",    desc: "An engineering alternative to Linktree with a built-in admin panel. Tracks link clicks in real-time, executing atomic increments in a MySQL database.", action: "VIEW PROJECT",     isConcept: false, tags: ["REACT", "NEXT.JS", "MYSQL", "TAILWIND"], url: "http://localhost:3001/" },
+      { title: "SYNTAXVAULT",       status: "Concept", type: "concept", sub: "secure code snippet vault",             desc: "A minimalist service for storing code snippets with syntax highlighting and token-based access protection.", action: "CONCEPT STAGE",  isConcept: true,  tags: ["REACT", "EXPRESS", "POSTGRESQL", "TAILWIND"], url: "" },
+      { title: "DEVPULSE KANBAN",   status: "Concept", type: "concept", sub: "high-speed agile board",                desc: "A task management application featuring a super-fast client-side drag-and-drop interface with local caching.", action: "CONCEPT STAGE",  isConcept: true,  tags: ["NEXT.JS", "DND-KIT", "SQLITE", "TAILWIND"], url: "" },
     ],
     footerCopyright: "© 2026",
     nowTitle: "04 / NOW",
@@ -68,10 +69,10 @@ const translations = {
     projectsTitle: "02 / ИЗБРАННЫЕ РАБОТЫ",
     projectsSubtitle: "Ключевые проекты",
     projects: [
-      { title: "DEVLINK ANALYTICS", status: "Активен",  type: "active",  sub: "платформа аналитики и отслеживания кликов", desc: "Инженерный аналог Linktree со встроенной админ-панелью. Отслеживает клики по ссылкам в реальном времени, выполняя атомарные инкременты в базе данных MySQL.", action: "ПОСМОТРЕТЬ ПРОЕКТ",  isConcept: false, tags: ["REACT", "NEXT.JS", "MYSQL", "TAILWIND"] },
-      { title: "ASCII ART GENERATOR", status: "В планах", type: "planned", sub: "конвертер изображений и видео в ascii",      desc: "Высокопроизводительный конвертер изображений и видеопотоков в ASCII-графику в реальном времени. Работает на стороне клиента с использованием Canvas.", action: "ПЛАНИРУЕМЫЙ ПРОЕКТ", isConcept: true,  tags: ["REACT", "CANVAS", "WEB WORKERS", "TAILWIND"] },
-      { title: "SYNTAXVAULT",       status: "Концепт",  type: "concept", sub: "защищенное хранилище сниппетов кода",        desc: "Минималистичный сервис для хранения сниппетов кода с подсветкой синтаксиса и защитой по токенам доступа.", action: "СТАДИЯ КОНЦЕПТА",  isConcept: true,  tags: ["REACT", "EXPRESS", "POSTGRESQL", "TAILWIND"] },
-      { title: "DEVPULSE KANBAN",   status: "Концепт",  type: "concept", sub: "высокоскоростная agile-панель",               desc: "Приложение для управления задачами со сверхбыстрым drag-and-drop interface. Включает локальное кэширование и фоновую синхронизацию данных.", action: "СТАДИЯ КОНЦЕПТА",  isConcept: true,  tags: ["NEXT.JS", "DND-KIT", "SQLITE", "TAILWIND"] },
+      { title: "ASCII ART GENERATOR", status: "Активен", type: "active", sub: "конвертер изображений и видео в ascii", desc: "Высокопроизводительный конвертер изображений и видеопотоков в ASCII-графику в реальном времени. Работает на стороне клиента с использованием Canvas.", action: "ПОСМОТРЕТЬ ПРОЕКТ", isConcept: false, tags: ["REACT", "CANVAS", "WEB WORKERS", "TAILWIND"], url: "/ascii" },
+      { title: "DEVLINK ANALYTICS", status: "Активен",  type: "active",  sub: "платформа аналитики и отслеживания кликов", desc: "Инженерный аналог Linktree со встроенной админ-панелью. Отслеживает клики по ссылкам в реальном времени, выполняя атомарные инкременты в базе данных MySQL.", action: "ПОСМОТРЕТЬ ПРОЕКТ",  isConcept: false, tags: ["REACT", "NEXT.JS", "MYSQL", "TAILWIND"], url: "http://localhost:3001/" },
+      { title: "SYNTAXVAULT",       status: "Концепт",  type: "concept", sub: "защищенное хранилище сниппетов кода",        desc: "Минималистичный сервис для хранения сниппетов кода с подсветкой синтаксиса и защитой по токенам доступа.", action: "СТАДИЯ КОНЦЕПТА",  isConcept: true,  tags: ["REACT", "EXPRESS", "POSTGRESQL", "TAILWIND"], url: "" },
+      { title: "DEVPULSE KANBAN",   status: "Концепт",  type: "concept", sub: "высокоскоростная agile-панель",               desc: "Приложение для управления задачами со сверхбыстрым drag-and-drop interface. Включает локальное кэширование и фоновую синхронизацию данных.", action: "СТАДИЯ КОНЦЕПТА",  isConcept: true,  tags: ["NEXT.JS", "DND-KIT", "SQLITE", "TAILWIND"], url: "" },
     ],
     footerCopyright: "© 2026",
     nowTitle: "04 / СЕЙЧАС",
@@ -87,7 +88,7 @@ const translations = {
     musicOff: "МУЗЫКА",
     play: "▶ СТАРТ",
     stop: "■ СТОП",
-    gunPhrases: ["*приподнимает шляпу*", "Шаг в сторону!", "Разыскивается!", "Эта земля моя", "Живым или мёртвым"],
+    gunPhrases: ["приподнимает шляпу", "Шаг в сторону!", "Разыскивается!", "Эта земля моя", "Живым или мёртвым"],
   },
 };
 
@@ -739,7 +740,7 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: monoFont, fontSize: '10px' }}>
               <button
                 onClick={togglePlay}
@@ -837,16 +838,19 @@ export default function Home() {
                   </React.Fragment>
                 ))}
               </div>
-              <div style={{
-                fontSize: '7.5px',
-                color: isRdr2 ? '#b01c1c' : '#71717a',
-                fontFamily: isRdr2 ? seEliteFont : 'var(--font-geist-mono), monospace',
-                marginTop: '3px',
-                opacity: 0.8,
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none',
-                letterSpacing: isRdr2 ? '0.02em' : 'normal'
-              }}>
+              <div
+                className="hidden sm:block"
+                style={{
+                  fontSize: '7.5px',
+                  color: isRdr2 ? '#b01c1c' : '#71717a',
+                  fontFamily: isRdr2 ? seEliteFont : 'var(--font-geist-mono), monospace',
+                  marginTop: '3px',
+                  opacity: 0.8,
+                  whiteSpace: 'nowrap',
+                  pointerEvents: 'none',
+                  letterSpacing: isRdr2 ? '0.02em' : 'normal'
+                }}
+              >
                 {lang === 'en' ? '*(switching to RU may affect custom fonts)' : '*(оригинальные шрифты могут не поддерживать кириллицу)'}
               </div>
             </div>
@@ -880,7 +884,7 @@ export default function Home() {
 
 
                 <h2
-                  className={`font-medium tracking-wide text-5xl sm:text-6xl md:text-7xl lg:text-4xl xl:text-5xl uppercase leading-tight select-none ${!isRdr2 ? 'font-serif' : ''}`}
+                  className={`font-medium tracking-wide text-4xl min-[360px]:text-5xl sm:text-6xl md:text-7xl lg:text-4xl xl:text-5xl uppercase leading-tight select-none ${!isRdr2 ? 'font-serif' : ''}`}
                   style={{
                     color: fgColor,
                     fontFamily: isRdr2 ? rdr2Font : undefined,
@@ -893,7 +897,7 @@ export default function Home() {
                 </h2>
 
                 <div
-                  className="relative sm:absolute mt-6 sm:mt-0 sm:left-[calc(100%+16px)] sm:bottom-1 z-10"
+                  className="absolute left-[calc(100%+12px)] sm:left-[calc(100%+16px)] bottom-1 z-10"
                   style={{ cursor: 'pointer' }}
                   onMouseEnter={() => handleCharHover(true)}
                   onMouseLeave={() => handleCharHover(false)}
@@ -1136,12 +1140,21 @@ export default function Home() {
                       ))}
                     </div>
                     {!proj.isConcept ? (
-                      <a href="http://localhost:3001/" target="_blank" rel="noopener noreferrer"
-                        style={{ fontFamily: monoFont, fontSize: '12px', color: isRdr2 ? 'var(--muted)' : '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                        onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = accentColor}
-                        onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = isRdr2 ? 'var(--muted)' : '#a1a1aa'}>
-                        {proj.action} <ArrowUpRight size={12} />
-                      </a>
+                      proj.url?.startsWith("/") ? (
+                        <Link href={proj.url}
+                          style={{ fontFamily: monoFont, fontSize: '12px', color: isRdr2 ? 'var(--muted)' : '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = accentColor}
+                          onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = isRdr2 ? 'var(--muted)' : '#a1a1aa'}>
+                          {proj.action} <ArrowUpRight size={12} />
+                        </Link>
+                      ) : (
+                        <a href={proj.url || "#"} target="_blank" rel="noopener noreferrer"
+                          style={{ fontFamily: monoFont, fontSize: '12px', color: isRdr2 ? 'var(--muted)' : '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.12em', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = accentColor}
+                          onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = isRdr2 ? 'var(--muted)' : '#a1a1aa'}>
+                          {proj.action} <ArrowUpRight size={12} />
+                        </a>
+                      )
                     ) : (
                       <span style={{ fontFamily: monoFont, fontSize: '12px', color: mutedDark, opacity: 0.65, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{proj.action}</span>
                     )}
