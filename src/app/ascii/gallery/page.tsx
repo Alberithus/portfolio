@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, RefreshCw } from "lucide-react";
+import { ArrowLeft, Lock, RefreshCw, Trash2, X, ZoomIn } from "lucide-react";
 import { useTheme } from "../../components/ThemeContext";
 
 interface UploadedImage {
+  id: string;
   image: string;
   ip: string;
   country: string;
@@ -24,17 +25,23 @@ export default function GalleryPage() {
   const [error, setError] = useState("");
   const [uploads, setUploads] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const correctPasscode = "1337";
+  const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(null);
 
   const seEliteFont = `var(--font-special-elite), serif`;
   const monoFont = isRdr2 ? seEliteFont : 'var(--font-geist-mono), monospace';
   const bodyFont = isRdr2 ? seEliteFont : 'var(--font-geist-sans), sans-serif';
   const ryeFont = `var(--font-rdr2), var(--font-rye), serif`;
 
+  const sha256 = async (message: string) => {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem("ascii_gallery_auth");
-    if (saved === "true") {
+    if (saved) {
       setIsAuthenticated(true);
     }
   }, []);
@@ -45,21 +52,37 @@ export default function GalleryPage() {
     }
   }, [isAuthenticated]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === correctPasscode) {
-      setIsAuthenticated(true);
-      localStorage.setItem("ascii_gallery_auth", "true");
-      setError("");
-    } else {
-      setError(isRdr2 ? "НЕВЕРНЫЙ КОД ДОСТУПА" : "ACCESS DENIED");
+    try {
+      const clientHash = await sha256(passcode);
+      const res = await fetch("/api/ascii-log", {
+        headers: {
+          "Authorization": `Bearer ${clientHash}`
+        }
+      });
+      const data = await res.json();
+      if (res.status === 200 && data.success) {
+        setIsAuthenticated(true);
+        localStorage.setItem("ascii_gallery_auth", clientHash);
+        setError("");
+      } else {
+        setError(isRdr2 ? "НЕВЕРНЫЙ КОД ДОСТУПА" : "ACCESS DENIED");
+      }
+    } catch (err) {
+      setError(isRdr2 ? "ОШИБКА АВТОРИЗАЦИИ" : "AUTH ERROR");
     }
   };
 
   const fetchUploads = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ascii-log");
+      const token = localStorage.getItem("ascii_gallery_auth") || "";
+      const res = await fetch("/api/ascii-log", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setUploads(data.uploads || []);
@@ -74,10 +97,40 @@ export default function GalleryPage() {
   const handleClearAll = async () => {
     if (!confirm(isRdr2 ? "Стереть все фото?" : "Clear all logged uploads?")) return;
     try {
-      const res = await fetch("/api/ascii-log", { method: "DELETE" });
+      const token = localStorage.getItem("ascii_gallery_auth") || "";
+      const res = await fetch("/api/ascii-log", {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setUploads([]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    if (!confirm(isRdr2 ? "Удалить это изображение?" : "Delete this image?")) return;
+    try {
+      const token = localStorage.getItem("ascii_gallery_auth") || "";
+      const res = await fetch("/api/ascii-log", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUploads(prev => prev.filter(item => item.id !== id));
+        if (selectedImage?.id === id) {
+          setSelectedImage(null);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -149,7 +202,6 @@ export default function GalleryPage() {
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="••••"
-                maxLength={8}
                 style={{
                   width: "100%",
                   fontFamily: monoFont,
@@ -237,7 +289,7 @@ export default function GalleryPage() {
               {isRdr2 ? "ЗАГРУЖЕННЫЕ ФОТО" : "USER UPLOADS CABINET"}
             </h1>
             <p style={{ fontSize: "11px", color: isRdr2 ? "var(--muted)" : "#71717a", fontFamily: monoFont }}>
-              {isRdr2 ? "Архив изображений пользователей в реальном времени" : "Real-time capture of converted images"}
+              {isRdr2 ? "Архив оригинальных изображений пользователей" : "Real-time crisp quality user image captures"}
             </p>
           </div>
 
@@ -294,9 +346,9 @@ export default function GalleryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {uploads.map((item, idx) => (
+            {uploads.map((item) => (
               <div 
-                key={idx}
+                key={item.id}
                 style={{
                   backgroundColor: "var(--card)",
                   border: `1px solid var(--border)`,
@@ -308,7 +360,7 @@ export default function GalleryPage() {
                 }}
               >
                 <div 
-                  className="aspect-square w-full relative flex items-center justify-center overflow-hidden"
+                  className="aspect-square w-full relative flex items-center justify-center overflow-hidden group"
                   style={{
                     backgroundColor: isRdr2 ? "#0c0905" : "#000000",
                     border: `1px solid var(--border-2)`,
@@ -319,6 +371,12 @@ export default function GalleryPage() {
                     alt="Upload thumbnail" 
                     className="max-w-full max-h-full object-contain"
                   />
+                  <div 
+                    onClick={() => setSelectedImage(item)}
+                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity duration-250"
+                  >
+                    <ZoomIn size={18} style={{ color: "#ffffff" }} />
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1" style={{ fontFamily: monoFont, fontSize: "9px" }}>
@@ -341,11 +399,100 @@ export default function GalleryPage() {
                     <span style={{ textAlign: "right" }}>{parseUA(item.ua)}</span>
                   </div>
                 </div>
+
+                <button
+                  onClick={() => handleDeleteItem(item.id)}
+                  style={{
+                    backgroundColor: isRdr2 ? "rgba(176, 28, 28, 0.15)" : "rgba(239, 68, 68, 0.1)",
+                    color: isRdr2 ? "var(--accent)" : "#ef4444",
+                    border: `1px solid ${isRdr2 ? "rgba(176, 28, 28, 0.3)" : "rgba(239, 68, 68, 0.2)"}`,
+                    padding: "6px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "4px",
+                    fontFamily: monoFont,
+                    fontSize: "9px",
+                    marginTop: "4px"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = isRdr2 ? "var(--accent)" : "#ef4444"; e.currentTarget.style.color = "#ffffff"; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = isRdr2 ? "rgba(176, 28, 28, 0.15)" : "rgba(239, 68, 68, 0.1)"; e.currentTarget.style.color = isRdr2 ? "var(--accent)" : "#ef4444"; }}
+                >
+                  <Trash2 size={10} />
+                  {isRdr2 ? "УДАЛИТЬ" : "DELETE"}
+                </button>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div 
+            className="relative max-w-4xl w-full flex flex-col p-2"
+            style={{
+              backgroundColor: "var(--card)",
+              border: `1px solid var(--border)`,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center px-4 py-3" style={{ borderBottom: `1px solid var(--border-2)` }}>
+              <div style={{ fontFamily: monoFont, fontSize: "11px", color: isRdr2 ? "var(--fg)" : "#a1a1aa" }}>
+                {selectedImage.city}, {selectedImage.country} ({selectedImage.ip}) — {formatTime(selectedImage.timestamp)}
+              </div>
+              <button 
+                onClick={() => setSelectedImage(null)}
+                className="cursor-pointer"
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: isRdr2 ? "var(--fg)" : "#ffffff",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center p-4 overflow-auto max-h-[70vh] bg-black/40">
+              <img 
+                src={selectedImage.image} 
+                alt="High resolution view" 
+                className="max-w-full max-h-[65vh] object-contain"
+              />
+            </div>
+
+            <div className="flex justify-between items-center px-4 py-3" style={{ borderTop: `1px solid var(--border-2)` }}>
+              <div style={{ fontFamily: monoFont, fontSize: "10px", color: isRdr2 ? "var(--muted)" : "#71717a" }}>
+                UA: {selectedImage.ua}
+              </div>
+              
+              <button
+                onClick={() => handleDeleteItem(selectedImage.id)}
+                style={{
+                  backgroundColor: isRdr2 ? "#8b0000" : "#ef4444",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "6px 12px",
+                  cursor: "pointer",
+                  fontFamily: monoFont,
+                  fontSize: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+              >
+                <Trash2 size={10} />
+                {isRdr2 ? "УДАЛИТЬ ИЗ СЕЙФА" : "DELETE FILE"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

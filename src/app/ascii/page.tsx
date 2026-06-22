@@ -530,7 +530,7 @@ export default function AsciiPage() {
     img.src = base64Str;
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const maxDim = 120;
+      const maxDim = 1024;
       let w = img.width;
       let h = img.height;
       if (w > h) {
@@ -549,7 +549,7 @@ export default function AsciiPage() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.drawImage(img, 0, 0, w, h);
-      const thumb = canvas.toDataURL("image/jpeg", 0.6);
+      const thumb = canvas.toDataURL("image/jpeg", 0.85);
       fetch("/api/ascii-log", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
