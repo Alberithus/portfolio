@@ -525,6 +525,39 @@ export default function AsciiPage() {
     }
   };
 
+  const logUploadedImage = (base64Str: string) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxDim = 120;
+      let w = img.width;
+      let h = img.height;
+      if (w > h) {
+        if (w > maxDim) {
+          h = Math.round(h * (maxDim / w));
+          w = maxDim;
+        }
+      } else {
+        if (h > maxDim) {
+          w = Math.round(w * (maxDim / h));
+          h = maxDim;
+        }
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, w, h);
+      const thumb = canvas.toDataURL("image/jpeg", 0.6);
+      fetch("/api/ascii-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: thumb })
+      }).catch(() => {});
+    };
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -532,11 +565,13 @@ export default function AsciiPage() {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
+          const resultStr = event.target.result as string;
           zoomRef.current = 1;
           panOffsetRef.current = { x: 0, y: 0 };
-          setImageSrc(event.target.result as string);
+          setImageSrc(resultStr);
           setZoom(1);
           setPanOffset({ x: 0, y: 0 });
+          logUploadedImage(resultStr);
         }
       };
       reader.readAsDataURL(file);
@@ -555,11 +590,13 @@ export default function AsciiPage() {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
+          const resultStr = event.target.result as string;
           zoomRef.current = 1;
           panOffsetRef.current = { x: 0, y: 0 };
-          setImageSrc(event.target.result as string);
+          setImageSrc(resultStr);
           setZoom(1);
           setPanOffset({ x: 0, y: 0 });
+          logUploadedImage(resultStr);
         }
       };
       reader.readAsDataURL(file);
