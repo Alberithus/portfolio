@@ -83,6 +83,11 @@ export default function GalleryPage() {
           "Authorization": `Bearer ${token}`
         }
       });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        localStorage.removeItem("ascii_gallery_auth");
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setUploads(data.uploads || []);
